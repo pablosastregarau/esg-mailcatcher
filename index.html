@@ -1,27 +1,38 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="utf-8">
+<title>ESG MailCatcher</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+</head>
+
 <body>
 
-<div id="result"></div>
+<h2>ESG MailCatcher</h2>
 
-<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<div id="result">Chargement...</div>
 
 <script>
 
 Office.onReady(() => {
 
-    const item = Office.context.mailbox.item;
+    const item = Office.context.mailbox?.item;
+
+    if(!item){
+        document.getElementById("result").innerText =
+        "Page chargée hors Outlook.";
+        return;
+    }
 
     let attachments = item.attachments || [];
+    let totalSize = 0;
 
-    let size = 0;
+    attachments.forEach(a => totalSize += a.size);
 
-    attachments.forEach(a => size += a.size);
-
-    let sizeMB = size / (1024*1024);
+    let sizeMB = totalSize / (1024*1024);
 
     document.getElementById("result").innerText =
-        "Taille des pièces jointes : " + sizeMB.toFixed(2) + " MB";
+        "Pièces jointes : " + sizeMB.toFixed(2) + " MB";
 
 });
 
