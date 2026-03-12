@@ -1,0 +1,116 @@
+body
+{
+font-family: Segoe UI, Arial, sans-serif;
+margin: 0;
+padding: 10px;
+background: #f5f7fa;
+}
+
+
+.container
+{
+max-width: 400px;
+margin: auto;
+}
+
+
+.header
+{
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 10px;
+}
+
+
+.logo
+{
+height: 20px;
+opacity: 0.8;
+}
+
+
+.card
+{
+background: white;
+padding: 12px;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+margin-bottom: 12px;
+}
+
+
+.metric
+{
+display: flex;
+justify-content: space-between;
+font-size: 14px;
+margin-top: 6px;
+}
+
+
+.total
+{
+font-weight: bold;
+margin-top: 10px;
+}
+
+
+.label
+{
+color: #555;
+}
+
+
+.impactBox
+{
+background: white;
+padding: 12px;
+border-radius: 8px;
+text-align: center;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+margin-bottom: 10px;
+}
+
+
+.impactTitle
+{
+font-size: 14px;
+color: #666;
+margin-bottom: 6px;
+}
+
+
+.impactValue
+{
+font-size: 20px;
+font-weight: bold;
+}
+
+
+.green
+{
+color: #2e7d32;
+}
+
+
+.orange
+{
+color: #f57c00;
+}
+
+
+.red
+{
+color: #c62828;
+}
+
+
+.advice
+{
+background: #ffffff;
+padding: 10px;
+border-radius: 8px;
+font-size: 13px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

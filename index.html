@@ -1,16 +1,80 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta charset="utf-8">
 <title>ESG MailCatcher</title>
+
 <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
+
+<div class="container">
+
+<div class="header">
+
 <h2>ESG MailCatcher</h2>
 
-<div id="result">Chargement...</div>
+<img src="images/cgi_logo.png" class="logo">
+
+</div>
+
+
+<div class="card">
+
+<div class="metric">
+<span class="label">Pièces jointes :</span>
+<span id="attachments">Calcul...</span>
+</div>
+
+<div class="metric">
+<span class="label">Images dans le mail :</span>
+<span id="images">Calcul...</span>
+</div>
+
+<div class="metric">
+<span class="label">Taille du contenu :</span>
+<span id="bodySize">Calcul...</span>
+</div>
+
+<div class="metric">
+<span class="label">Destinataires :</span>
+<span id="recipients">Calcul...</span>
+</div>
+
+<div class="metric total">
+<span class="label">Taille totale estimée :</span>
+<span id="totalSize">Calcul...</span>
+</div>
+
+</div>
+
+
+<div class="impactBox">
+
+<div class="impactTitle">
+Impact carbone estimé
+</div>
+
+<div id="impactValue" class="impactValue">
+Calcul...
+</div>
+
+</div>
+
+
+<div id="advice" class="advice"></div>
+
+</div>
+
+
 
 <script>
 
@@ -19,24 +83,117 @@ Office.onReady(() => {
     const item = Office.context.mailbox?.item;
 
     if(!item){
-        document.getElementById("result").innerText =
-        "Page chargée hors Outlook.";
+
+        document.body.innerHTML = "Cette page doit être ouverte dans Outlook.";
         return;
+
     }
 
-    let attachments = item.attachments || [];
-    let totalSize = 0;
-
-    attachments.forEach(a => totalSize += a.size);
-
-    let sizeMB = totalSize / (1024*1024);
-
-    document.getElementById("result").innerText =
-        "Pièces jointes : " + sizeMB.toFixed(2) + " MB";
+    calculateImpact(item);
 
 });
 
+
+
+function calculateImpact(item){
+
+    let attachments = item.attachments || [];
+    let attachmentBytes = 0;
+
+    attachments.forEach(a => attachmentBytes += a.size);
+
+    let attachmentMB = attachmentBytes / (1024*1024);
+
+    document.getElementById("attachments").innerText =
+    attachmentMB.toFixed(2) + " MB";
+
+
+
+    const recipients =
+        (item.to?.length || 0) +
+        (item.cc?.length || 0) +
+        (item.bcc?.length || 0);
+
+    document.getElementById("recipients").innerText = recipients;
+
+
+
+    item.body.getAsync("text", function(result){
+
+        let text = result.value || "";
+
+        let bodyMB = text.length / (1024*1024);
+
+        document.getElementById("bodySize").innerText =
+        bodyMB.toFixed(2) + " MB";
+
+
+
+        item.body.getAsync("html", function(res){
+
+            let html = res.value || "";
+
+            let imgCount = (html.match(/<img/gi) || []).length;
+
+            document.getElementById("images").innerText = imgCount;
+
+
+
+            let imageMB = imgCount * 0.1;
+
+            let totalMB = attachmentMB + bodyMB + imageMB;
+
+            document.getElementById("totalSize").innerText =
+            totalMB.toFixed(2) + " MB";
+
+
+
+            let impact = totalMB * Math.max(recipients,1) * 0.02;
+
+            let impactDisplay = impact.toFixed(3) + " g CO₂";
+
+            let level = "green";
+
+            if(impact > 1) level = "orange";
+            if(impact > 3) level = "red";
+
+            let impactElement = document.getElementById("impactValue");
+
+            impactElement.innerText = impactDisplay;
+
+            impactElement.className = "impactValue " + level;
+
+
+
+            let advice = [];
+
+            if(attachmentMB > 5)
+                advice.push("Utilisez un lien OneDrive plutôt qu'une pièce jointe.");
+
+            if(imgCount > 3)
+                advice.push("Réduisez les images dans la signature.");
+
+            if(recipients > 10)
+                advice.push("Limitez les destinataires en copie.");
+
+            if(bodyMB > 0.5)
+                advice.push("Essayez de raccourcir votre message.");
+
+            if(advice.length === 0)
+                advice.push("Impact faible. Bon usage des emails.");
+
+            document.getElementById("advice").innerHTML =
+            "<b>Conseils ESG :</b><br>" + advice.join("<br>");
+
+        });
+
+    });
+
+}
+
 </script>
 
+
 </body>
+
 </html>
