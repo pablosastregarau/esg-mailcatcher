@@ -9,7 +9,7 @@
   <ProviderName>ESG</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
 
-  <DisplayName DefaultValue="ESG MailCatcher"/>
+  <DisplayName DefaultValue="ESG MailImpact V.1"/>
   <Description DefaultValue="Analyse l'impact carbone des emails"/>
 
   <Hosts>
