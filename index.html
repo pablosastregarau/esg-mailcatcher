@@ -93,6 +93,12 @@ Office.onReady(() => {
 });
 
 
+function formatSize(bytes){
+    if(bytes < 1024) return bytes + " B";
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+    return (bytes/(1024*1024)).toFixed(2) + " MB";
+}
+
 function calculateImpact(item){
 
     let attachments = item.attachments || [];
@@ -100,10 +106,8 @@ function calculateImpact(item){
 
     attachments.forEach(a => attachmentBytes += a.size);
 
-    let attachmentMB = attachmentBytes / (1024*1024);
-
     document.getElementById("attachments").innerText =
-    attachmentMB.toFixed(2) + " MB";
+    formatSize(attachmentBytes);
 
 
     const recipients =
@@ -117,10 +121,11 @@ function calculateImpact(item){
     item.body.getAsync("text", function(result){
 
         let text = result.value || "";
-        let bodyMB = text.length / (1024*1024);
+        let bodyBytes = text.length;
+        let bodyKB = bodyBytes / 1024;
 
         document.getElementById("bodySize").innerText =
-        bodyMB.toFixed(2) + " MB";
+        formatSize(bodyBytes);
 
 
         item.body.getAsync("html", function(res){
@@ -130,46 +135,70 @@ function calculateImpact(item){
 
             document.getElementById("images").innerText = imgCount;
 
-            let imageMB = imgCount * 0.1;
-
-            let totalMB = attachmentMB + bodyMB + imageMB;
+            let imageBytes = imgCount * 100 * 1024; // ~100KB par image
+            let totalBytes = attachmentBytes + bodyBytes + imageBytes;
 
             document.getElementById("totalSize").innerText =
-            totalMB.toFixed(2) + " MB";
+            formatSize(totalBytes);
 
 
-            let impact = totalMB * Math.max(recipients,1) * 0.02;
+            let impact = (totalBytes / (1024*1024)) * Math.max(recipients,1) * 0.02;
 
             let impactDisplay = impact.toFixed(3) + " g CO₂";
 
             let level = "green";
-            if(impact > 1) level = "orange";
-            if(impact > 3) level = "red";
+            if(impact > 0.150) level = "orange";
+            if(impact > 1) level = "red";
 
             let impactElement = document.getElementById("impactValue");
             impactElement.innerText = impactDisplay;
             impactElement.className = "impactValue " + level;
 
 
-            let advice = [];
+            // --- LOGIQUE ADVICE UNIQUE ---
+            let issues = [];
 
-            if(attachmentMB > 2)
-                advice.push("Utilisez un lien OneDrive plutôt qu'une pièce jointe.");
+            if(attachmentBytes > 2 * 1024 * 1024)
+                issues.push("attachments");
 
             if(imgCount > 3)
-                advice.push("Réduisez les images dans la signature.");
+                issues.push("images");
 
             if(recipients > 10)
-                advice.push("Limitez les destinataires en copie.");
+                issues.push("recipients");
 
-            if(bodyMB > 0.5)
-                advice.push("Essayez de raccourcir votre message.");
+            if(bodyKB > 512)
+                issues.push("body");
 
-            if(advice.length === 0)
-                advice.push("Impact faible. Bon usage des emails.");
+
+            let finalAdvice = "";
+
+            if(issues.length === 0){
+                finalAdvice = "Impact faible. Bon usage des emails.";
+            }
+            else if(issues.length === 1){
+                switch(issues[0]){
+                    case "attachments":
+                        finalAdvice = "Utilisez un lien OneDrive plutôt qu'une pièce jointe.";
+                        break;
+                    case "images":
+                        finalAdvice = "Réduisez les images dans la signature.";
+                        break;
+                    case "recipients":
+                        finalAdvice = "Limitez les destinataires en copie.";
+                        break;
+                    case "body":
+                        finalAdvice = "Essayez de raccourcir votre message.";
+                        break;
+                }
+            }
+            else{
+                finalAdvice = "Vous devez optimiser votre email.";
+            }
+
 
             document.getElementById("advice").innerHTML =
-            "<b>Conseils ESG :</b><br>" + advice.join("<br>");
+            "<b>Conseils ESG :</b><br>" + finalAdvice;
 
         });
 

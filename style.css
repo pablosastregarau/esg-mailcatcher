@@ -17,7 +17,8 @@ body
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
+    margin-top: -9px;
 }
 
 .logo
@@ -113,8 +114,15 @@ body
     background: #ffffff;
     padding: 10px;
     border-radius: 8px;
-    font-size: 13px;
+    font-size: 14px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: #555;
+}
+
+.advice b
+{
+    display: block;
+    margin-bottom: -11px;
 }
 
 /* === RESPONSIVE (Outlook étroit) === */
