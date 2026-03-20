@@ -147,7 +147,7 @@ function calculateImpact(item){
             let impactDisplay = impact.toFixed(3) + " g CO₂";
 
             let level = "green";
-            if(impact > 0.150) level = "orange";
+            if(impact > 0.5) level = "orange";
             if(impact > 1) level = "red";
 
             let impactElement = document.getElementById("impactValue");
@@ -179,10 +179,10 @@ function calculateImpact(item){
             else if(issues.length === 1){
                 switch(issues[0]){
                     case "attachments":
-                        finalAdvice = "Utilisez un lien OneDrive plutôt qu'une pièce jointe.";
+                        finalAdvice = "Utilisez un lien drive plutôt qu'une pièce jointe.";
                         break;
                     case "images":
-                        finalAdvice = "Réduisez les images dans la signature.";
+                        finalAdvice = "Réduisez les images dans votre message.";
                         break;
                     case "recipients":
                         finalAdvice = "Limitez les destinataires en copie.";
